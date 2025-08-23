@@ -1,0 +1,20 @@
+name: "Setup dotnet and restore"
+description: "Setup dotnet and restore"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.x.x
+    - uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', 'global.json', 'Directory.Build.props') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+    - name: Install .NET dependencies
+      shell: bash
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: dotnet restore

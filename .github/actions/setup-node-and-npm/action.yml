@@ -1,0 +1,35 @@
+name: "Setup node and npm"
+description: "Setup node and npm"
+
+inputs:
+  nodeVersion:
+    description: "Node version"
+    required: true
+  frontendDirectory:
+    required: true
+    description: "Frontend directory"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-node@v4
+      id: setup-node
+      with:
+        node-version: ${{ inputs.nodeVersion }}
+        registry-url: "https://npm.pkg.github.com"
+
+    - name: Cache node_modules
+      id: cache-node-modules
+      uses: actions/cache@v4
+      with:
+        path: ${{ inputs.frontendDirectory }}/node_modules
+        key: ${{ runner.environment }}-node-pkg-${{ inputs.nodeVersion }}-${{ hashFiles(format('{0}/package-lock.json', inputs.frontendDirectory)) }}
+
+    - name: Install dependencies
+      if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      shell: bash
+      run: npm ci --ignore-scripts
+      working-directory: ${{ inputs.frontendDirectory }}
+    - name: Mark Action as Completed
+      shell: bash
+      run: echo "setup-node-npm-completed=true" >> $GITHUB_ENV

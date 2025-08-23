@@ -1,0 +1,119 @@
+name: "Provision Azure Infrastructure with Pulumi"
+description: "Deploy Azure infrastructure using Pulumi with .NET"
+
+inputs:
+  action:
+    description: "Pulumi action to perform (up, destroy, etc.)"
+    required: true
+  stack:
+    description: "Pulumi stack name"
+    required: true
+  workDir:
+    description: "Working directory for Pulumi"
+    required: true
+    default: "./infrastructure"
+  tenantId:
+    description: "Azure tenant ID"
+    required: true
+  orchestratorClientId:
+    description: "Azure orchestrator client ID"
+    required: true
+  subscriptionId:
+    description: "Azure subscription ID"
+    required: true
+  passphrase:
+    description: "Pulumi passphrase"
+    required: true
+  storageAccount:
+    description: "Azure storage account name"
+    required: true
+  storageKey:
+    description: "Azure storage account key"
+    required: true
+  discordClientSecret:
+    description: "Discord client secret"
+    required: true
+  cloudflareToken:
+    description: "Cloudflare API token"
+    required: true
+  cloudflareZoneId:
+    description: "Cloudflare zone ID"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.x.x
+
+    - name: Cache .NET packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', 'global.json', 'Directory.Build.props') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Install .NET dependencies
+      shell: bash
+      if: steps.cache-dotnet-packages.outputs.cache-hit != 'true'
+      run: dotnet restore Infrastructure.csproj
+      working-directory: ${{ inputs.workDir }}
+
+    - name: Build .NET
+      shell: bash
+      run: dotnet build Infrastructure.csproj
+      working-directory: ${{ inputs.workDir }}
+
+    - name: Login to Azure
+      uses: azure/login@v2
+      with:
+        environment: azurecloud
+        tenant-id: ${{ inputs.tenantId }}
+        client-id: ${{ inputs.orchestratorClientId }}
+        subscription-id: ${{ inputs.subscriptionId }}
+
+    - name: Running Pulumi ${{ inputs.action }}
+      uses: pulumi/actions@v6
+      env:
+        PULUMI_CONFIG_PASSPHRASE: ${{ inputs.passphrase }}
+        AZURE_STORAGE_ACCOUNT: ${{ inputs.storageAccount }}
+        AZURE_STORAGE_KEY: ${{ inputs.storageKey }}
+        ARM_USE_OIDC: "true"
+        ARM_USE_MSI: "true"
+        ARM_TENANT_ID: ${{ inputs.tenantId }}
+        ARM_CLIENT_ID: ${{ inputs.orchestratorClientId }}
+        ARM_SUBSCRIPTION_ID: ${{ inputs.subscriptionId }}
+        ARM_SKIP_PROVIDER_REGISTRATION: "true"
+      with:
+        command: ${{ inputs.action }}
+        stack-name: ${{ inputs.stack }}
+        work-dir: ${{ inputs.workDir }}
+        diff: true
+        refresh: true
+        upsert: true
+        color: always
+        pulumi-version: latest
+        suppress-progress: true
+        cloud-url: azblob://state
+        config-map: |
+          {
+            "DISCORD_CLIENT_SECRET": {
+              "value": "${{ inputs.discordClientSecret }}",
+              "secret": true
+            },
+            "CLOUDFLARE_API_TOKEN": {
+              "value": "${{ inputs.cloudflareToken }}",
+              "secret": true
+            },
+            "CLOUDFLARE_ZONE_ID": {
+              "value": "${{ inputs.cloudflareZoneId }}",
+              "secret": true
+            }
+          }
+
+    - name: Mark Action as Completed
+      shell: bash
+      run: echo "pulumi-provision-completed=true" >> $GITHUB_ENV

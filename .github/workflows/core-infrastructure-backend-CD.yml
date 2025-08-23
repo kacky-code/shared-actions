@@ -1,0 +1,33 @@
+name: Core Azure Infrastructure Backend CD
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy-core-infrastructure:
+    strategy:
+      matrix:
+        include:
+          - environment: "Development"
+            stack: "dev"
+            storageAccountName: AZURE_PULUMI_STORAGE_ACCOUNT
+            storageKeyName: AZURE_PULUMI_STORAGE_KEY
+      fail-fast: true
+      max-parallel: 1
+    uses: ./.github/workflows/shared-pulumi-provision-infrastructure.yml
+    with:
+      environment: ${{ matrix.environment }}
+      jobName: "Update Kacky Core Infrastructure"
+      stack: ${{ matrix.stack }}
+      action: "up"
+    secrets:
+      passphrase: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      storageAccount: ${{ secrets[matrix.storageAccountName] }}
+      storageKey: ${{ secrets[matrix.storageKeyName] }}
