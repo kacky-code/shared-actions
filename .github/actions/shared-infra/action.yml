@@ -39,6 +39,9 @@ inputs:
   cloudflareZoneId:
     description: "Cloudflare zone ID"
     required: false
+  sentryDsn:
+    description: "Sentry DSN"
+    required: false
 
 runs:
   using: "composite"
@@ -102,6 +105,10 @@ runs:
           {
             "DISCORD_CLIENT_SECRET": {
               "value": "${{ inputs.discordClientSecret }}",
+              "secret": true
+            },
+            "SENTRY_DSN": {
+              "value": "${{ inputs.sentryDsn }}",
               "secret": true
             },
             "CLOUDFLARE_API_TOKEN": {
