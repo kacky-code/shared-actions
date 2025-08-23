@@ -32,13 +32,13 @@ inputs:
     required: true
   discordClientSecret:
     description: "Discord client secret"
-    required: true
+    required: false
   cloudflareToken:
     description: "Cloudflare API token"
-    required: true
+    required: false
   cloudflareZoneId:
     description: "Cloudflare zone ID"
-    required: true
+    required: false
 
 runs:
   using: "composite"
