@@ -42,6 +42,15 @@ inputs:
   sentryDsn:
     description: "Sentry DSN"
     required: false
+  portainerUsername:
+      description: "Portainer username"
+      required: false
+  portainerPassword:
+      description: "Portainer password"
+      required: false
+  portainerUrl:
+      description: "Portainer URL"
+      required: false
 
 runs:
   using: "composite"
@@ -109,6 +118,18 @@ runs:
             },
             "SENTRY_DSN": {
               "value": "${{ inputs.sentryDsn }}",
+              "secret": true
+            },
+           "PORTAINER_USERNAME": {
+              "value": "${{ inputs.portainerUsername }}",
+              "secret": true
+            },
+            "PORTAINER_PASSWORD": {
+              "value": "${{ inputs.portainerPassword }}",
+              "secret": true
+            },
+            "PORTAINER_URL": {
+              "value": "${{ inputs.portainerUrl }}",
               "secret": true
             },
             "CLOUDFLARE_API_TOKEN": {
