@@ -51,6 +51,12 @@ inputs:
   portainerUrl:
       description: "Portainer URL"
       required: false
+  tmClientId:
+    description: "Client Id for Trackmania API"
+    required: false
+  tmClientSecret:
+    description: "Secret for Trackmania API"
+    required: false
 
 runs:
   using: "composite"
@@ -126,6 +132,14 @@ runs:
             },
             "PORTAINER_PASSWORD": {
               "value": "${{ inputs.portainerPassword }}",
+              "secret": true
+            },
+           "TRACKMANIA_CLIENT_ID": {
+              "value": "${{ inputs.tmClientId }}",
+              "secret": true
+            },
+            "TRACKMANIA_CLIENT_SECRET": {
+              "value": "${{ inputs.tmClientSecret }}",
               "secret": true
             },
             "PORTAINER_URL": {
