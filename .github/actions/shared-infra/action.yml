@@ -30,6 +30,9 @@ inputs:
   storageKey:
     description: "Azure storage account key"
     required: true
+  discordClientId:
+    description: "Discord client id"
+    required: false
   discordClientSecret:
     description: "Discord client secret"
     required: false
@@ -120,6 +123,10 @@ runs:
           {
             "DISCORD_CLIENT_SECRET": {
               "value": "${{ inputs.discordClientSecret }}",
+              "secret": true
+            },
+            "DISCORD_CLIENT_ID": {
+              "value": "${{ inputs.discordClientId }}",
               "secret": true
             },
             "SENTRY_DSN": {
