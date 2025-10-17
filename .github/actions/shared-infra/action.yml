@@ -33,6 +33,12 @@ inputs:
   discordClientId:
     description: "Discord client id"
     required: false
+  discordGuildId:
+    description: "Discord guild id"
+    required: false
+  discordAdminRoleId:
+    description: "Discord role id"
+    required: false
   discordClientSecret:
     description: "Discord client secret"
     required: false
@@ -127,6 +133,14 @@ runs:
             },
             "DISCORD_CLIENT_ID": {
               "value": "${{ inputs.discordClientId }}",
+              "secret": true
+            },
+            "DISCORD_GUILD_ID": {
+              "value": "${{ inputs.discordGuildId }}",
+              "secret": true
+            },
+            "DISCORD_GUILD_ROLE_ID": {
+              "value": "${{ inputs.discordAdminRoleId }}",
               "secret": true
             },
             "SENTRY_DSN": {
