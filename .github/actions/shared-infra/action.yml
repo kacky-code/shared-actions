@@ -9,7 +9,7 @@ inputs:
     description: "Pulumi stack name"
     required: true
   workDir:
-    description: "Working directory for Pulumi"
+    description: "Working  directory for Pulumi"
     required: true
     default: "./infrastructure"
   tenantId:
@@ -60,6 +60,9 @@ inputs:
   portainerUrl:
       description: "Portainer URL"
       required: false
+  jaegerEndpoint:
+    description: "Endpoint Url for Jaeger OTEL"
+    required: false
   tmClientId:
     description: "Client Id for Trackmania API"
     required: false
@@ -165,6 +168,10 @@ runs:
             },
             "PORTAINER_URL": {
               "value": "${{ inputs.portainerUrl }}",
+              "secret": true
+            },
+            "JAEGER_ENDPOINT": {
+              "value": "${{ inputs.jaegerEndpoint }}",
               "secret": true
             },
             "CLOUDFLARE_API_TOKEN": {
