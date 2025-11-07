@@ -63,9 +63,6 @@ inputs:
   jaegerEndpoint:
     description: "Endpoint Url for Jaeger OTEL"
     required: false
-  redisUrl:
-    description: "Endpoint Url Redis"
-    required: false
   tmClientId:
     description: "Client Id for Trackmania API"
     required: false
@@ -175,10 +172,6 @@ runs:
             },
             "JAEGER_ENDPOINT": {
               "value": "${{ inputs.jaegerEndpoint }}",
-              "secret": true
-            },
-            "REDIS_URL": {
-              "value": "${{ inputs.redisUrl }}",
               "secret": true
             },
             "CLOUDFLARE_API_TOKEN": {
