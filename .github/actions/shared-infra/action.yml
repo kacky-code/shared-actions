@@ -30,48 +30,6 @@ inputs:
   storageKey:
     description: "Azure storage account key"
     required: true
-  discordClientId:
-    description: "Discord client id"
-    required: false
-  discordGuildId:
-    description: "Discord guild id"
-    required: false
-  discordAdminRoleId:
-    description: "Discord role id"
-    required: false
-  discordClientSecret:
-    description: "Discord client secret"
-    required: false
-  cloudflareToken:
-    description: "Cloudflare API token"
-    required: false
-  cloudflareZoneId:
-    description: "Cloudflare zone ID"
-    required: false
-  sentryDsn:
-    description: "Sentry DSN"
-    required: false
-  portainerUsername:
-      description: "Portainer username"
-      required: false
-  portainerPassword:
-      description: "Portainer password"
-      required: false
-  portainerUrl:
-      description: "Portainer URL"
-      required: false
-  jaegerEndpoint:
-    description: "Endpoint Url for Jaeger OTEL"
-    required: false
-  tmClientId:
-    description: "Client Id for Trackmania API"
-    required: false
-  tmClientSecret:
-    description: "Secret for Trackmania API"
-    required: false
-  mcApiKey:
-    description: "API Key for MC"
-    required: false
 
 runs:
   using: "composite"
@@ -120,6 +78,9 @@ runs:
         ARM_CLIENT_ID: ${{ inputs.orchestratorClientId }}
         ARM_SUBSCRIPTION_ID: ${{ inputs.subscriptionId }}
         ARM_SKIP_PROVIDER_REGISTRATION: "true"
+        AZURE_CLIENT_ID: ${{ inputs.orchestratorClientId }}
+        AZURE_TENANT_ID: ${{ inputs.tenantId }}
+        AZURE_SUBSCRIPTION_ID: ${{ inputs.subscriptionId }}
       with:
         command: ${{ inputs.action }}
         stack-name: ${{ inputs.stack }}
@@ -131,65 +92,6 @@ runs:
         pulumi-version: latest
         suppress-progress: true
         cloud-url: azblob://state
-        config-map: |
-          {
-            "DISCORD_CLIENT_SECRET": {
-              "value": "${{ inputs.discordClientSecret }}",
-              "secret": true
-            },
-            "DISCORD_CLIENT_ID": {
-              "value": "${{ inputs.discordClientId }}",
-              "secret": true
-            },
-            "DISCORD_GUILD_ID": {
-              "value": "${{ inputs.discordGuildId }}",
-              "secret": true
-            },
-            "DISCORD_GUILD_ROLE_ID": {
-              "value": "${{ inputs.discordAdminRoleId }}",
-              "secret": true
-            },
-            "SENTRY_DSN": {
-              "value": "${{ inputs.sentryDsn }}",
-              "secret": true
-            },
-           "PORTAINER_USERNAME": {
-              "value": "${{ inputs.portainerUsername }}",
-              "secret": true
-            },
-           "MINICONTROL_API_KEY": {
-              "value": "${{ inputs.mcApiKey }}",
-              "secret": true
-            },
-            "PORTAINER_PASSWORD": {
-              "value": "${{ inputs.portainerPassword }}",
-              "secret": true
-            },
-           "TRACKMANIA_CLIENT_ID": {
-              "value": "${{ inputs.tmClientId }}",
-              "secret": true
-            },
-            "TRACKMANIA_CLIENT_SECRET": {
-              "value": "${{ inputs.tmClientSecret }}",
-              "secret": true
-            },
-            "PORTAINER_URL": {
-              "value": "${{ inputs.portainerUrl }}",
-              "secret": true
-            },
-            "JAEGER_ENDPOINT": {
-              "value": "${{ inputs.jaegerEndpoint }}",
-              "secret": true
-            },
-            "CLOUDFLARE_API_TOKEN": {
-              "value": "${{ inputs.cloudflareToken }}",
-              "secret": true
-            },
-            "CLOUDFLARE_ZONE_ID": {
-              "value": "${{ inputs.cloudflareZoneId }}",
-              "secret": true
-            }
-          }
 
     - name: Mark Action as Completed
       shell: bash
